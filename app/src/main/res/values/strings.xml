@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Music</string>
+    <string name="search">Пошук</string>
+    <string name="add_artist_text">Виберіть більше\nвиконавцій, які вам\nподобаються</string>
 </resources>
