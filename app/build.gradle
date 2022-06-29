@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -41,8 +42,6 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        /*sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8*/
     }
     packagingOptions {
         resources {
@@ -90,4 +89,8 @@ dependencies {
 
     //
     implementation "com.google.accompanist:accompanist-swiperefresh:0.24.11-rc"
+
+    //firebase
+    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 }

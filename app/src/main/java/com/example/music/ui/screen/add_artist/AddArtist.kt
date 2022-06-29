@@ -3,6 +3,7 @@ package com.example.music.ui.screen.add_artist
 import android.text.Layout
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CircleShape
@@ -14,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,9 +36,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.music.R
 import com.example.music.data.model.artist.Artist
 import com.example.music.ui.theme.MusicTheme
+import com.example.music.ui.theme.roundedIcon
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshIndicator
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import kotlinx.coroutines.launch
 
 
 private val GRID_SPACING = 8.dp
@@ -53,7 +57,17 @@ fun AddArtist(viewModel: AddArtistVM) {
 private fun AddArtistContent(
     viewModel: AddArtistVM,
 ) {
-    val viewState by viewModel.state.collectAsState()
+    val state = viewModel.state.collectAsState().value
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    state.snackBarText?.let { message ->
+        LaunchedEffect(message) {
+            Log.d("zxc", "snackBarshown")
+            snackbarHostState.showSnackbar(message)
+        }
+
+        viewModel.snackBarShown()
+    }
 
     Column {
         Text(
@@ -74,7 +88,7 @@ private fun AddArtistContent(
         Spacer(modifier = Modifier.height(25.dp))
 
         AddArtistArtistList(
-            viewState = viewState
+            viewModel = viewModel
         )
     }
 
@@ -165,9 +179,11 @@ private fun SearchBar(
 
 @Composable
 private fun AddArtistArtistList(
-    viewState: AddArtistViewState,
+    viewModel: AddArtistVM,
     modifier: Modifier = Modifier,
 ) {
+    val viewState = viewModel.state.collectAsState().value
+
     SwipeRefresh(
         modifier = modifier,
         state = rememberSwipeRefreshState(isRefreshing = viewState.isRefreshing),
@@ -185,7 +201,7 @@ private fun AddArtistArtistList(
         }
     ) {
         LazyVerticalGrid(
-            modifier = modifier.bodyWidth(),
+            modifier = modifier.fillMaxWidth(),
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(
                 GRID_SPACING,
@@ -200,62 +216,18 @@ private fun AddArtistArtistList(
             ),
         ) {
             items(viewState.artists /*key = { artists -> artists.id }*/) { artist ->
-                AddArtistArtist(
+                Artist(
                     name = artist.name,
-                    picture = artist.images[0].url
+                    picture = artist.images[0].url,
+                    selected = {
+                        viewModel.artistsSelected(artist)
+                    }
                 )
             }
-
-           /* if (isRefreshing) {
-                fullSpanItem {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp)
-                    ) {
-                        //CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    }
-                }
-            }*/
         }
     }
 }
 
-val bodyMaxWidth: Dp
-    @Composable get() = when (LocalConfiguration.current.screenWidthDp) {
-        in 0..599 -> Dp.Infinity
-        in 600..904 -> Dp.Infinity
-        in 905..1239 -> 840.dp
-        in 1240..1439 -> Dp.Infinity
-        else -> 1040.dp
-    }
-
-fun Modifier.bodyWidth() = fillMaxWidth()
-    .wrapContentWidth(align = Alignment.CenterHorizontally)
-    .composed {
-        val bodyMaxWidth = bodyMaxWidth
-        if (bodyMaxWidth.isFinite) widthIn(max = bodyMaxWidth) else this
-    }
-    .composed {
-        padding(
-            WindowInsets.systemBars
-                .only(WindowInsetsSides.Horizontal)
-                .asPaddingValues()
-        )
-    }
-
-inline fun LazyGridScope.fullSpanItem(
-    key: Any? = null,
-    contentType: Any? = null,
-    noinline content: @Composable LazyGridItemScope.() -> Unit,
-) {
-    item(
-        key = key,
-        span = { GridItemSpan(maxLineSpan) },
-        contentType = contentType,
-        content = content,
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -271,7 +243,7 @@ fun AddArtistArtist(
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(110.dp),
+                        .height(MaterialTheme.roundedIcon.medium),
                     shape = CircleShape
                 ) {
                     Image(
@@ -292,26 +264,51 @@ fun AddArtistArtist(
 }
 
 @Composable
-fun Artist(name: String,) {
+fun Artist(
+    name: String,
+    picture: String,
+    selected: (String) -> Unit
+) {
+    var isSelected by remember {
+        mutableStateOf(false)
+    }
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable {
+                isSelected = !isSelected
+                selected(name)
+            },
     ) {
         Box(
-            modifier = Modifier.align(Alignment.End)
+            contentAlignment = Alignment.TopEnd
         ) {
-            Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription = "")
-            Image(painter = painterResource(id = R.drawable.ic_round_check_circle_24), contentDescription = "",)
-            //modifier = Modifier.align(Alignment.End))
+            Image(
+                painter = rememberAsyncImagePainter(model = picture),
+                contentDescription = "",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape)
+                    .height(110.dp),
+                contentScale = ContentScale.Crop,
+            )
+            if (isSelected) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_round_check_circle_24),
+                    contentDescription = "",
+                )
+            }
         }
-        Text(text = name)
+        Text(text = name, modifier = Modifier.wrapContentWidth(Alignment.End))
     }
 }
 
-@Preview()
+@Preview(showSystemUi = false)
 @Composable
 fun DefaultPreview() {
     MusicTheme {
-        com.example.music.ui.screen.add_artist.Artist("asd")
         //Check(true)
     }
 }

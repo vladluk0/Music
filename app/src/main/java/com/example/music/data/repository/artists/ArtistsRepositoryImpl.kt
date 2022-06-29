@@ -1,7 +1,9 @@
 package com.example.music.data.repository.artists
 
 import com.example.music.data.model.artist.Artist
+import com.example.music.data.model.artist.Artists
 import com.example.music.data.remote.RemoteArtistDaraSource
+import com.example.music.ui.theme.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
@@ -11,15 +13,14 @@ class ArtistsRepositoryImpl @Inject constructor(
     private val remoteArtistDaraSource: RemoteArtistDaraSource
 ) : ArtistsRepository {
 
-    suspend fun findArtists(artistsId: String, query: String): Flow<List<Artist>> {
-        val artists = remoteArtistDaraSource.getArtists(artistsId)
-        return artists.map {
+    suspend fun findArtists(artistsId: String, query: String): Result<Artists?> {
+        return remoteArtistDaraSource.getArtists(artistsId)
+        /*return artists.map {
             it.filter { artist ->
                 artist.name.contains(query, true)
             }
-        }
+        }*/
     }
 
-    override suspend fun getArtists(artistsId: String): Flow<List<Artist>> =
-        remoteArtistDaraSource.getArtists(artistsId)
+    override suspend fun getArtists(artistsId: String): Result<Artists?> = remoteArtistDaraSource.getArtists(artistsId)
 }

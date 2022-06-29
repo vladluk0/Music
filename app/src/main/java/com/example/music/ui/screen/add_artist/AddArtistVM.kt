@@ -4,22 +4,22 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.music.data.model.artist.Artist
+import com.example.music.data.model.artist.Artists
 import com.example.music.data.repository.artists.ArtistsRepositoryImpl
-import kotlinx.coroutines.Dispatchers
+import com.example.music.ui.theme.Result
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import javax.inject.Inject
 
 
 data class AddArtistViewState(
     val artists: List<Artist> = listOf(),
     val selectedArtists: List<Artist> = listOf(),
-    val showErrorMessage: String? = null,
+    val errorMessage: String? = null,
     val isRefreshing: Boolean = false,
     val searchQuery: String = "",
+    val snackBarText: String? = null
 )
 
 @OptIn(FlowPreview::class)
@@ -27,7 +27,7 @@ class AddArtistVM @Inject constructor(
     private val artistsRepository: ArtistsRepositoryImpl
 ) : ViewModel() {
 
-    private var _state = MutableStateFlow(AddArtistViewState(isRefreshing = true))
+    private var _state = MutableStateFlow(AddArtistViewState())
 
     private val searchQuery = MutableStateFlow("")
 
@@ -35,7 +35,7 @@ class AddArtistVM @Inject constructor(
         get() = _state.asStateFlow()
 
     init {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             searchQuery.debounce(300)
                 .onEach { searchQuery ->
                     artistsRepository.findArtists(artistsId, searchQuery).collect { artists ->
@@ -48,11 +48,58 @@ class AddArtistVM @Inject constructor(
                     }
                 }
                 .collect()
+        }*/
+        viewModelScope.launch {
+            when (val artists = artistsRepository.getArtists(artistsId)) {
+                is Result.Loading -> _state.update {
+                    it.copy(
+                        isRefreshing = true
+                    )
+                }
+                is Result.Success.Value -> _state.update {
+                    searchQuery.debounce(300)
+                        .onEach {
+
+                        }
+                    it.copy(
+                        artists = artists.data!!.artists,
+                        isRefreshing = false
+                    )
+                }
+                is Result.Success.Empty -> {
+                    Log.d("zxc", "empty")
+                }
+                is Result.Error -> {
+                    when (artists.code) {
+                        else -> {
+                            Log.d("zxc", "code: ${artists.code}")
+                        }
+                    }
+                }
+            }
         }
     }
 
     fun search(query: String) {
         searchQuery.value = query
+    }
+
+    fun snackBarShown() {
+        _state.update {
+            it.copy(snackBarText = null)
+        }
+    }
+
+    fun artistsSelected(artist: Artist) {
+        _state.update {
+            it.copy(
+                snackBarText = artist.name
+            )
+        }
+    }
+
+    companion object {
+        val ERROR_400 = 400
     }
 }
 
