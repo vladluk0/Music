@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.music.data.model.artist.Artist
 import com.example.music.data.repository.artists.ArtistsRepositoryImpl
-import kotlinx.coroutines.Dispatchers
+import com.example.music.domain.observable.ObserveArtists
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okhttp3.internal.wait
 import javax.inject.Inject
 
 
@@ -22,20 +20,28 @@ data class AddArtistViewState(
     val searchQuery: String = "",
 )
 
-@OptIn(FlowPreview::class)
 class AddArtistVM @Inject constructor(
-    private val artistsRepository: ArtistsRepositoryImpl
+    private val observeArtists: ObserveArtists
 ) : ViewModel() {
-
-    private var _state = MutableStateFlow(AddArtistViewState(isRefreshing = true))
 
     private val searchQuery = MutableStateFlow("")
 
-    val state: StateFlow<AddArtistViewState>
-        get() = _state.asStateFlow()
+    val state: StateFlow<AddArtistViewState> = combine(
+        observeArtists.flow
+    ) { artists ->
+        Log.d("zxc", artists.toString())
+        AddArtistViewState(
+            artists = artists[0]
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = AddArtistViewState()
+    )
 
     init {
-        viewModelScope.launch {
+        observeArtists(ObserveArtists.Params(artistsId))
+        /*viewModelScope.launch {
             searchQuery.debounce(300)
                 .onEach { searchQuery ->
                     artistsRepository.findArtists(artistsId, searchQuery).collect { artists ->
@@ -48,7 +54,7 @@ class AddArtistVM @Inject constructor(
                     }
                 }
                 .collect()
-        }
+        }*/
     }
 
     fun search(query: String) {

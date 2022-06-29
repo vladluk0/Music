@@ -3,6 +3,7 @@ package com.example.music.ui.screen.add_artist
 import android.text.Layout
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.CircleShape
@@ -185,7 +186,7 @@ private fun AddArtistArtistList(
         }
     ) {
         LazyVerticalGrid(
-            modifier = modifier.bodyWidth(),
+            modifier = modifier.fillMaxWidth(),
             columns = GridCells.Fixed(3),
             horizontalArrangement = Arrangement.spacedBy(
                 GRID_SPACING,
@@ -206,55 +207,19 @@ private fun AddArtistArtistList(
                 )
             }
 
-           /* if (isRefreshing) {
-                fullSpanItem {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp)
-                    ) {
-                        //CircularProgressIndicator(Modifier.align(Alignment.Center))
-                    }
-                }
-            }*/
+            /* if (isRefreshing) {
+                 fullSpanItem {
+                     Box(
+                         Modifier
+                             .fillMaxWidth()
+                             .padding(24.dp)
+                     ) {
+                         //CircularProgressIndicator(Modifier.align(Alignment.Center))
+                     }
+                 }
+             }*/
         }
     }
-}
-
-val bodyMaxWidth: Dp
-    @Composable get() = when (LocalConfiguration.current.screenWidthDp) {
-        in 0..599 -> Dp.Infinity
-        in 600..904 -> Dp.Infinity
-        in 905..1239 -> 840.dp
-        in 1240..1439 -> Dp.Infinity
-        else -> 1040.dp
-    }
-
-fun Modifier.bodyWidth() = fillMaxWidth()
-    .wrapContentWidth(align = Alignment.CenterHorizontally)
-    .composed {
-        val bodyMaxWidth = bodyMaxWidth
-        if (bodyMaxWidth.isFinite) widthIn(max = bodyMaxWidth) else this
-    }
-    .composed {
-        padding(
-            WindowInsets.systemBars
-                .only(WindowInsetsSides.Horizontal)
-                .asPaddingValues()
-        )
-    }
-
-inline fun LazyGridScope.fullSpanItem(
-    key: Any? = null,
-    contentType: Any? = null,
-    noinline content: @Composable LazyGridItemScope.() -> Unit,
-) {
-    item(
-        key = key,
-        span = { GridItemSpan(maxLineSpan) },
-        contentType = contentType,
-        content = content,
-    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -265,7 +230,10 @@ fun AddArtistArtist(
 ) {
     Column {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.clickable {
+                throw RuntimeException("Test Crash")
+            }
         ) {
             Box {
                 Card(
@@ -292,15 +260,26 @@ fun AddArtistArtist(
 }
 
 @Composable
-fun Artist(name: String,) {
+fun Artist(name: String) {
+
+    val isChecked by remember {
+        mutableStateOf(true)
+    }
+
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
-            modifier = Modifier.align(Alignment.End)
+            modifier = Modifier.align(Alignment.End),
         ) {
-            Image(painter = painterResource(id = R.drawable.ic_launcher_background), contentDescription = "")
-            Image(painter = painterResource(id = R.drawable.ic_round_check_circle_24), contentDescription = "",)
+            Image(
+                painter = painterResource(id = R.drawable.ic_launcher_background),
+                contentDescription = ""
+            )
+            Image(
+                painter = painterResource(id = R.drawable.ic_round_check_circle_24),
+                contentDescription = "",
+            )
             //modifier = Modifier.align(Alignment.End))
         }
         Text(text = name)

@@ -11,7 +11,7 @@ class RemoteArtistDaraSource @Inject constructor(
     private val artistsService: ArtistsService
 ) {
 
-    suspend fun getArtists(artistsId: String): Flow<List<Artist>> = flow {
+    fun getArtists(artistsId: String): Flow<List<Artist>> = flow {
         val artists: List<Artist> =
             artistsService.fetchArtists(artistsId).body()?.artists ?: listOf()
         emit(artists)
