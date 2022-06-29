@@ -32,6 +32,7 @@ import com.example.music.R
 import com.example.music.Screen
 import com.example.music.ui.screen.add_artist.AddArtist
 import com.example.music.ui.theme.MusicTheme
+import com.example.music.ui.theme.roundedIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,7 +75,8 @@ fun LibraryContent(
 
     LazyColumn(
         state = listState,
-        modifier = Modifier.padding(top = 5.dp)
+        modifier = Modifier
+            .padding(top = 5.dp)
             .nestedScroll(nestedScrollConnection)
     ) {
         items(20) {
@@ -116,10 +118,11 @@ fun LibraryAppBar() {
             Category(text = "Виконавці")
         }
 
-        Spacer(modifier = Modifier
-            .height(2.dp)
-            .fillMaxWidth()
-            .background(Color.Black)
+        Spacer(
+            modifier = Modifier
+                .height(2.dp)
+                .fillMaxWidth()
+                .background(Color.Black)
         )
     }
 }
@@ -131,7 +134,7 @@ fun Category(
     Surface(
         border = BorderStroke(1.dp, Color.Black),
         shape = RoundedCornerShape(8.dp),
-    ){
+    ) {
         Text(
             text = text,
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 1.dp)
@@ -153,27 +156,32 @@ fun AddNewArtist(
             }
             .fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(50.dp)
-                .background(Color.Gray),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_baseline_add_24),
-                contentDescription = "",
-                modifier = Modifier.size(30.dp)
-            )
-        }
+
+        ArtistIcon()
 
         Spacer(modifier = Modifier.width(8.dp))
 
         BasicText(
             text = "Додати виконавців",
             modifier = Modifier.height(30.dp),
+        )
+    }
+}
 
-            )
+@Composable
+fun ArtistIcon() {
+    Box(
+        modifier = Modifier
+            .clip(CircleShape)
+            .size(MaterialTheme.roundedIcon.small)
+            .background(Color.Gray),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_baseline_add_24),
+            contentDescription = "",
+            modifier = Modifier.size(30.dp)
+        )
     }
 }
 
