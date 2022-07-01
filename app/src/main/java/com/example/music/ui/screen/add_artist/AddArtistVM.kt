@@ -1,14 +1,10 @@
 package com.example.music.ui.screen.add_artist
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.music.data.model.artist.Artist
-import com.example.music.data.repository.artists.ArtistsRepositoryImpl
 import com.example.music.domain.observable.ObserveArtists
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -29,7 +25,6 @@ class AddArtistVM @Inject constructor(
     val state: StateFlow<AddArtistViewState> = combine(
         observeArtists.flow
     ) { artists ->
-        Log.d("zxc", artists.toString())
         AddArtistViewState(
             artists = artists[0]
         )

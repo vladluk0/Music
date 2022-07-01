@@ -15,12 +15,12 @@ import com.example.music.ui.screen.add_artist.AddArtist
 import com.example.music.ui.screen.add_artist.AddArtistVM
 
 import com.example.music.ui.theme.MusicTheme
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var viewModel: AddArtistVM
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
