@@ -50,31 +50,21 @@ class AddArtistVM @Inject constructor(
                 .collect()
         }*/
         viewModelScope.launch {
-            when (val artists = artistsRepository.getArtists(artistsId)) {
-                is Result.Loading -> _state.update {
-                    it.copy(
-                        isRefreshing = true
-                    )
-                }
-                is Result.Success.Value -> _state.update {
-                    searchQuery.debounce(300)
-                        .onEach {
-
-                        }
-                    it.copy(
-                        artists = artists.data!!.artists,
-                        isRefreshing = false
-                    )
-                }
-                is Result.Success.Empty -> {
-                    Log.d("zxc", "empty")
-                }
-                is Result.Error -> {
-                    when (artists.code) {
-                        else -> {
-                            Log.d("zxc", "code: ${artists.code}")
-                        }
+            artistsRepository.getArtists(artistsId).collect { artists ->
+                when (artists) {
+                    is Result.Loading -> _state.update {
+                        it.copy(
+                            isRefreshing = true
+                        )
                     }
+                    is Result.Success.Value -> _state.update {
+                        it.copy(
+                            artists = artists.data!!.artists,
+                            isRefreshing = false
+                        )
+                    }
+                    is Result.Success.Empty -> {}
+                    is Result.Error -> {}
                 }
             }
         }

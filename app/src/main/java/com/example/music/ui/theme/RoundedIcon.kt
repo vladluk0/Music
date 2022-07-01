@@ -1,5 +1,6 @@
 package com.example.music.ui.theme
 
+import android.util.Log
 import androidx.annotation.NonNull
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -7,8 +8,12 @@ import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.music.data.model.artist.Artists
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -37,23 +42,26 @@ sealed class Result<out T> {
     object Loading : Result<Nothing>()
 }
 
+@OptIn(FlowPreview::class)
 suspend inline fun <reified T> asyncRequest(
-    dispatcher: CoroutineDispatcher,
-    crossinline block: suspend () -> T
-): Result<T> {
-    return withContext(dispatcher) {
-        try {
-            if (null is T)
-                Result.Success.Empty
-            else
-                Result.Success.Value(block.invoke())
-        } catch (throwable: Throwable) {
-            when (throwable) {
-                is HttpException -> Result.Error(throwable.code())
-                else -> Result.Error(0)
+    noinline block: suspend () -> T
+): Flow<Result<T>> = flow {
+    emit(Result.Loading)
+    try {
+        if (null is T)
+            emit(Result.Success.Empty)
+        else
+            block.asFlow().collect {
+                emit(Result.Success.Value(it))
             }
+    } catch (throwable: Throwable) {
+        val exception = when (throwable) {
+            is HttpException -> Result.Error(throwable.code())
+            else -> Result.Error(0)
         }
+        emit(exception)
     }
-}
+}.flowOn(Dispatchers.IO)
+
 
 
