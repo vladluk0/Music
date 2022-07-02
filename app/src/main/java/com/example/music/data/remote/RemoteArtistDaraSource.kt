@@ -1,5 +1,7 @@
 package com.example.music.data.remote
 
+import android.util.Log
+import com.example.music.data.model.artist.Artist
 import com.example.music.data.model.artist.Artists
 import com.example.music.ui.theme.asyncRequest
 import kotlinx.coroutines.Dispatchers
@@ -11,8 +13,9 @@ class RemoteArtistDaraSource @Inject constructor(
     private val artistsService: ArtistsService
 ) {
 
-    suspend fun getArtists(artistsId: String): Artists? {
-        return artistsService.fetchArtists(artistsId).body()
+    suspend fun getArtists(artistsId: String): List<Artist> {
+        Log.d("zxc", "getArtists")
+        return artistsService.fetchArtists(artistsId).body()?.artists ?: listOf()
 
     }
 }

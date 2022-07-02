@@ -4,12 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.music.data.model.artist.Artist
-import com.example.music.data.model.artist.Artists
 import com.example.music.data.repository.artists.ArtistsRepositoryImpl
-import com.example.music.ui.theme.Result
-import kotlinx.coroutines.FlowPreview
+import com.example.music.domain.observable.ObserveArtists
+import com.example.music.util.ObserveLoadingCounter
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -22,19 +20,35 @@ data class AddArtistViewState(
     val snackBarText: String? = null
 )
 
-@OptIn(FlowPreview::class)
 class AddArtistVM @Inject constructor(
-    private val artistsRepository: ArtistsRepositoryImpl
+    val observeArtists: ObserveArtists,
+    repositoryImpl: ArtistsRepositoryImpl
 ) : ViewModel() {
-
-    private var _state = MutableStateFlow(AddArtistViewState())
 
     private val searchQuery = MutableStateFlow("")
 
-    val state: StateFlow<AddArtistViewState>
-        get() = _state.asStateFlow()
+    private val observeLoadingCounter = ObserveLoadingCounter()
+
+    val state: StateFlow<AddArtistViewState> = combine(
+        observeArtists.flow
+    ) { artists ->
+        Log.d("zxc", artists.toString())
+        AddArtistViewState(
+            artists = artists[0]
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        initialValue = AddArtistViewState(),
+        started = SharingStarted.WhileSubscribed()
+    )
+
+    fun refresh() {
+        observeArtists.createObservable(ObserveArtists.Params(artistsId))
+    }
 
     init {
+        Log.d("zxc", "init")
+        observeArtists.createObservable(ObserveArtists.Params(artistsId))
         /*viewModelScope.launch {
             searchQuery.debounce(300)
                 .onEach { searchQuery ->
@@ -49,7 +63,7 @@ class AddArtistVM @Inject constructor(
                 }
                 .collect()
         }*/
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             artistsRepository.getArtists(artistsId).collect { artists ->
                 when (artists) {
                     is Result.Loading -> _state.update {
@@ -67,25 +81,27 @@ class AddArtistVM @Inject constructor(
                     is Result.Error -> {}
                 }
             }
-        }
+        }*/
     }
+
+
 
     fun search(query: String) {
         searchQuery.value = query
     }
 
     fun snackBarShown() {
-        _state.update {
+        /*_state.update {
             it.copy(snackBarText = null)
-        }
+        }*/
     }
 
     fun artistsSelected(artist: Artist) {
-        _state.update {
+        /*_state.update {
             it.copy(
                 snackBarText = artist.name
             )
-        }
+        }*/
     }
 
     companion object {

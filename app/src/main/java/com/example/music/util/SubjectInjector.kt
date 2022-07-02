@@ -20,15 +20,6 @@ abstract class SubjectInjector<P, T> {
         createObservable(it)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val stateFlow: Flow<InvokeStatus> = paramState.flatMapLatest {
-        flow {
-            emit(InvokeStarted)
-            createObservable(it)
-            emit(InvokeFinished)
-        }
-    }
-
     operator fun invoke(params: P) {
         paramState.tryEmit(params)
     }

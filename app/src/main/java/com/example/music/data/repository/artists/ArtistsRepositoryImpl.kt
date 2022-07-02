@@ -1,8 +1,9 @@
 package com.example.music.data.repository.artists
 
+import com.example.music.data.model.artist.Artist
 import com.example.music.data.model.artist.Artists
 import com.example.music.data.remote.RemoteArtistDaraSource
-import com.example.music.ui.theme.Result
+import com.example.music.ui.theme.MusicResult
 import com.example.music.ui.theme.asyncRequest
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -20,7 +21,7 @@ class ArtistsRepositoryImpl @Inject constructor(
         }
     }*/
 
-    override suspend fun getArtists(artistsId: String): Flow<Result<Artists?>> {
+    override suspend fun getArtists(artistsId: String): Flow<MusicResult<List<Artist>>> {
         return asyncRequest {
             remoteArtistDaraSource.getArtists(artistsId)
         }
