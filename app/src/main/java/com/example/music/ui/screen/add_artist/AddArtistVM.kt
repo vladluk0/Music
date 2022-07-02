@@ -32,7 +32,7 @@ class AddArtistVM @Inject constructor(
     val state: StateFlow<AddArtistViewState> = combine(
         observeArtists.flow
     ) { artists ->
-        Log.d("zxc", artists.toString())
+        Log.d("zxc", "view state $artists")
         AddArtistViewState(
             artists = artists[0]
         )
@@ -43,12 +43,13 @@ class AddArtistVM @Inject constructor(
     )
 
     fun refresh() {
-        observeArtists.createObservable(ObserveArtists.Params(artistsId))
+
     }
 
     init {
         Log.d("zxc", "init")
-        observeArtists.createObservable(ObserveArtists.Params(artistsId))
+        observeArtists(ObserveArtists.Params(artistsId))
+    }
         /*viewModelScope.launch {
             searchQuery.debounce(300)
                 .onEach { searchQuery ->
@@ -82,9 +83,6 @@ class AddArtistVM @Inject constructor(
                 }
             }
         }*/
-    }
-
-
 
     fun search(query: String) {
         searchQuery.value = query

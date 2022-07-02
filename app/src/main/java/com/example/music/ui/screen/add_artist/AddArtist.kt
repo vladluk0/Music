@@ -182,7 +182,9 @@ private fun AddArtistArtistList(
     viewModel: AddArtistVM,
     modifier: Modifier = Modifier,
 ) {
+
     val viewState = viewModel.state.collectAsState().value
+    Log.d("zxc", "viewstate: " + viewState.artists)
 
     SwipeRefresh(
         modifier = modifier,
