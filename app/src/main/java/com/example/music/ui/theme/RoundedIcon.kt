@@ -33,7 +33,7 @@ sealed class MusicResult<out T> {
         object Empty : Success<Nothing>()
     }
 
-    data class Error(val code: Int) : MusicResult<Nothing>()
+    data class Error(val code: Int? = null, val message: String) : MusicResult<Nothing>()
     object Started : MusicResult<Nothing>()
     object Finished : MusicResult<Nothing>()
 }
@@ -52,8 +52,8 @@ suspend inline fun <reified T> asyncRequest(
             }
     } catch (throwable: Throwable) {
         val exception = when (throwable) {
-            is HttpException -> MusicResult.Error(throwable.code())
-            else -> MusicResult.Error(0)
+            is HttpException -> MusicResult.Error(throwable.code(), "Http Exception")
+            else -> MusicResult.Error(0, "Error")
         }
         emit(exception)
     }

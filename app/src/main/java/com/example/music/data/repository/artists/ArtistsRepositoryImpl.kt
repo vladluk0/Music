@@ -1,11 +1,14 @@
 package com.example.music.data.repository.artists
 
+import android.util.Log
 import com.example.music.data.model.artist.Artist
 import com.example.music.data.model.artist.Artists
 import com.example.music.data.remote.RemoteArtistDaraSource
 import com.example.music.ui.theme.MusicResult
 import com.example.music.ui.theme.asyncRequest
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
+import retrofit2.HttpException
 import javax.inject.Inject
 
 class ArtistsRepositoryImpl @Inject constructor(
@@ -21,9 +24,23 @@ class ArtistsRepositoryImpl @Inject constructor(
         }
     }*/
 
-    override suspend fun getArtists(artistsId: String): Flow<MusicResult<List<Artist>>> {
-        return asyncRequest {
-            remoteArtistDaraSource.getArtists(artistsId)
+    override fun getArtists(artistsId: String): Flow<MusicResult<List<Artist>>> {
+        return flow {
+
+        }
+    }
+
+    fun searchArtists(artistsId: String, query: String): Flow<MusicResult<List<Artist>>> {
+        return flow {
+            val artistsList: Flow<List<Artist>> = remoteArtistDaraSource.searchArtists(artistsId, "")
+            Log.d("zxc", "artistsList " + artistsList.toString())
+            artistsList.map { artists ->
+                if (artists.isEmpty())
+                    emit(MusicResult.Error(message = "No data"))
+                else {
+                    emit(MusicResult.Success.Value(artists))
+                }
+            }
         }
     }
 }

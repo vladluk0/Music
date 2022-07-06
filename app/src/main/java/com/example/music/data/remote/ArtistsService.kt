@@ -1,6 +1,7 @@
 package com.example.music.data.remote
 
 import com.example.music.data.model.artist.Artists
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -19,7 +20,7 @@ interface ArtistsService {
     @Headers(
         "Accept: application/json",
         "Content-Type: application/json",
-        "Authorization: Bearer BQCI_yX6u-z8XsS9JTtIBG5YrG5e_nVgUvJiuwmDvIRkYBxghZ0ABBouBC0XflXHQl61t0q2o9lT7RiNaqEs1qsrOVW4h1Uo5kzFu3OaNu3DGVJD9I2ayXoufVniAsy6uqSxvpoHObzjMqaAZRvuWnbItlv5uRUKWYFmbXDRpwqK7xbZWJQD3GTXdvnFUfs4hhiJb86DUOh_u6wwoeaZzBr-1ILh2mlG7WPVtGl2",
+        "Authorization: Bearer BQCnxTrFso1_qnjAF1Z-pgcyJhyJNEjIJKLjVx2d1qgfYzeTjgbrZPcqf9g4ptuJIJrNMHKiLFD0LEdI3G0-kr7vk46dyDyxrPPfSlPypUGIjqYfttOHY563CMJs4S3cSJE2VbcVAwWsnqSgMHRAI5WXsrDuCrPYP9qNZQzK12PkSKkivfPhMxq69PcMSoNV5vASRfYtYHl2pxv5p3d1hbe0IN_sGvaMZnGw7fbb",
         /*"X-RapidAPI-Host: spotify23.p.rapidapi.com"*/
     )
     @GET("artists/")

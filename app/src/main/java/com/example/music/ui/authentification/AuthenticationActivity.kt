@@ -1,36 +1,28 @@
-package com.example.music
+package com.example.music.ui.authentification
 
 import android.os.Bundle
+import android.os.PersistableBundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
-import com.example.music.di.DaggerApplicationComponent
-import com.example.music.ui.screen.add_artist.AddArtist
-import com.example.music.ui.screen.add_artist.AddArtistVM
-
+import com.example.music.ui.authentification.screen.main.AuthMain
 import com.example.music.ui.theme.MusicTheme
-import javax.inject.Inject
 
-class MainActivity : ComponentActivity() {
+class AuthenticationActivity: ComponentActivity() {
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
+        super.onCreate(savedInstanceState, persistentState)
         setContent {
-
             MusicTheme {
-                // A surface container using the 'background' color from the theme
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     //color = MaterialTheme.colorScheme.background
                 ) {
-                    //AddArtist(viewModel = viewModel)
-                    Home()
+                    AuthMain()
                 }
             }
         }
@@ -41,6 +33,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     MusicTheme {
-        //AddArtist()
+        AuthMain()
     }
 }

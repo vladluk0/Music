@@ -7,5 +7,5 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface ArtistsRepository {
-    suspend fun getArtists(artistsId: String): Flow<MusicResult<List<Artist>>>
+    fun getArtists(artistsId: String): Flow<MusicResult<List<Artist>>>
 }

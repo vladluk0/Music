@@ -63,10 +63,10 @@ private fun AddArtistContent(
     state.snackBarText?.let { message ->
         LaunchedEffect(message) {
             Log.d("zxc", "snackBarshown")
-            snackbarHostState.showSnackbar(message)
+            snackbarHostState.showSnackbar(message.message)
         }
 
-        viewModel.snackBarShown()
+        viewModel.snackBarShown(message.id)
     }
 
     Column {
@@ -184,7 +184,6 @@ private fun AddArtistArtistList(
 ) {
 
     val viewState = viewModel.state.collectAsState().value
-    Log.d("zxc", "viewstate: " + viewState.artists)
 
     SwipeRefresh(
         modifier = modifier,

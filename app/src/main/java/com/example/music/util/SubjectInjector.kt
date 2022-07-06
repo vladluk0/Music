@@ -15,12 +15,10 @@ abstract class SubjectInjector<P, T> {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val flow: Flow<T> = paramState.flatMapLatest {
-        Log.d("zxc", "paramState")
         createObservable(it)
     }.distinctUntilChanged()
 
     operator fun invoke(params: P) {
-        Log.d("zxc", "invoke")
         paramState.tryEmit(params)
     }
 

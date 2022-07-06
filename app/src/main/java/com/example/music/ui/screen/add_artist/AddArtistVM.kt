@@ -6,20 +6,25 @@ import androidx.lifecycle.viewModelScope
 import com.example.music.data.model.artist.Artist
 import com.example.music.data.repository.artists.ArtistsRepositoryImpl
 import com.example.music.domain.observable.ObserveArtists
+import com.example.music.ui.theme.MusicResult
 import com.example.music.util.ObserveLoadingCounter
+import com.example.music.util.UiMessage
+import com.example.music.util.UiMessageManager
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
 data class AddArtistViewState(
     val artists: List<Artist> = listOf(),
     val selectedArtists: List<Artist> = listOf(),
-    val errorMessage: String? = null,
+    val errorMessage: UiMessage? = null,
     val isRefreshing: Boolean = false,
-    val searchQuery: String = "",
-    val snackBarText: String? = null
+    val snackBarText: UiMessage? = null
 )
 
+@OptIn(FlowPreview::class)
 class AddArtistVM @Inject constructor(
     val observeArtists: ObserveArtists,
     repositoryImpl: ArtistsRepositoryImpl
@@ -28,13 +33,16 @@ class AddArtistVM @Inject constructor(
     private val searchQuery = MutableStateFlow("")
 
     private val observeLoadingCounter = ObserveLoadingCounter()
+    private val uiMessageManager = UiMessageManager()
 
     val state: StateFlow<AddArtistViewState> = combine(
-        observeArtists.flow
-    ) { artists ->
-        Log.d("zxc", "view state $artists")
+        observeArtists.flow,
+        uiMessageManager.message
+    ) { artists, message ->
+        Log.d("zxc", "state")
         AddArtistViewState(
-            artists = artists[0]
+            artists = artists,
+            snackBarText = message
         )
     }.stateIn(
         scope = viewModelScope,
@@ -42,56 +50,39 @@ class AddArtistVM @Inject constructor(
         started = SharingStarted.WhileSubscribed()
     )
 
-    fun refresh() {
-
-    }
-
     init {
-        Log.d("zxc", "init")
-        observeArtists(ObserveArtists.Params(artistsId))
-    }
-        /*viewModelScope.launch {
+        viewModelScope.launch {
             searchQuery.debounce(300)
                 .onEach { searchQuery ->
-                    artistsRepository.findArtists(artistsId, searchQuery).collect { artists ->
-                        _state.update {
-                            it.copy(
-                                artists = artists,
-                                isRefreshing = false
-                            )
+                    repositoryImpl.searchArtists(artistsId, searchQuery).collect { stateArtists ->
+                        when (stateArtists) {
+                            is MusicResult.Success.Value -> {
+                                Log.d("zxc", "success")
+                                observeArtists(ObserveArtists.Params(artistsId, searchQuery))
+                            }
+                            else -> {}
                         }
                     }
                 }
-                .collect()
-        }*/
-        /*viewModelScope.launch {
-            artistsRepository.getArtists(artistsId).collect { artists ->
-                when (artists) {
-                    is Result.Loading -> _state.update {
-                        it.copy(
-                            isRefreshing = true
-                        )
-                    }
-                    is Result.Success.Value -> _state.update {
-                        it.copy(
-                            artists = artists.data!!.artists,
-                            isRefreshing = false
-                        )
-                    }
-                    is Result.Success.Empty -> {}
-                    is Result.Error -> {}
+                .catch { throwable ->
+                    Log.d("zxc", "catch")
+                    uiMessageManager.emitMessage(UiMessage(throwable))
+                    //Log.d("zxc", uiMessageManager.message)
                 }
-            }
-        }*/
+                .collect()
+        }
+    }
 
     fun search(query: String) {
         searchQuery.value = query
+        Log.d("zxc", query)
     }
 
-    fun snackBarShown() {
-        /*_state.update {
-            it.copy(snackBarText = null)
-        }*/
+    fun snackBarShown(id: Long) {
+        Log.d("zxc", "snackBarShown")
+        viewModelScope.launch {
+            uiMessageManager.clearMessage(id)
+        }
     }
 
     fun artistsSelected(artist: Artist) {
