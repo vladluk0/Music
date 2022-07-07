@@ -67,7 +67,7 @@ fun MainBottomContent(
         Icon(
             painter = painterResource(id = R.drawable.ic_baseline_fitbit_24),
             contentDescription = "",
-            Modifier.background(Color.White)
+            tint = Color.White
         )
 
         Text(
@@ -136,6 +136,6 @@ fun MainButtons(
 @Composable
 fun DefaultPreview() {
     MusicTheme {
-
+        AuthMainContent({})
     }
 }

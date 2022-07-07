@@ -1,7 +1,5 @@
-package com.example.music.ui.authentification.screen.free_registration
+package com.example.music.ui.authentification.screen.log_in
 
-import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -15,19 +13,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.music.MainActivity
+import com.example.music.ui.authentification.RegistrationScreen
 import com.example.music.ui.common.field.EmailField
 import com.example.music.ui.common.field.PasswordField
 import com.example.music.ui.common.top_bar.SimpleAppBar
 import com.example.music.ui.theme.MusicTheme
 import com.example.music.ui.theme.padding
-import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FreeRegistrationPassword(
-    navController: NavController,
-    email: String
+fun LogIn(
+    navController: NavController
 ) {
     Scaffold(
         topBar = {
@@ -43,19 +39,16 @@ fun FreeRegistrationPassword(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            FreeRegContent(
-                email = email
-            )
+            LogInContent(navController)
         }
     }
 }
 
 @Composable
-fun FreeRegContent(
-    email: String
+fun LogInContent(
+    navController: NavController
 ) {
-
-    var password by remember {
+    var mail by remember {
         mutableStateOf("")
     }
 
@@ -64,43 +57,23 @@ fun FreeRegContent(
             start = MaterialTheme.padding.start,
             end = MaterialTheme.padding.end
         ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        EmailField(
+            textField = "Адреса Елктронної пошти",
+            onEmailChange = { mail = it},
+            mail = mail
+        )
+
         PasswordField(
-            textField = "Створіть пароль",
-            onEmailChange = {
-                password = it
-            },
-            mail = password
+            textField = "Адреса Елктронної пошти",
+            onEmailChange = { mail = it},
+            mail = mail
         )
 
-        CreateAccountButton(
-            email = email,
-            password = password
-        )
-    }
-}
-
-@Composable
-fun CreateAccountButton(
-    email: String,
-    password: String
-) {
-    val context = LocalContext.current
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxWidth()
-    ) {
         Button(
             onClick = {
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(
-                    email,
-                    password
-                ).addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        context.startActivity(Intent(context, MainActivity::class.java))
-                    }
-                }
+                navController.navigate(RegistrationScreen.FreePassword.createRoute(mail))
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Gray
@@ -110,7 +83,7 @@ fun CreateAccountButton(
             )
         ) {
             Text(
-                text = "Створити акаунт",
+                text = "Далі",
                 color = Color.Black
             )
         }
@@ -119,11 +92,10 @@ fun CreateAccountButton(
 
 @Preview(showSystemUi = true)
 @Composable
-fun FreeRegistrationPreview() {
+fun DefaultPreview() {
     MusicTheme {
-        FreeRegistrationPassword(
-            navController = NavController(LocalContext.current),
-            email = ""
+        LogIn(
+            navController = NavController(LocalContext.current)
         )
     }
 }

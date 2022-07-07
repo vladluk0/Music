@@ -1,29 +1,33 @@
 package com.example.music.ui.authentification.screen.free_registration
 
+import android.icu.text.UnicodeSetIterator
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.music.ui.authentification.RegistrationScreen
+import com.example.music.ui.common.field.EmailField
 import com.example.music.ui.common.top_bar.SimpleAppBar
 import com.example.music.ui.theme.MusicTheme
-import com.example.music.ui.theme.padding
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FreeRegistrationMail(
-    back: () -> Unit,
-    toFreeRegPassword: () -> Unit
+    navController: NavController
 ) {
     Scaffold(
         topBar = {
-            SimpleAppBar(back)
+            SimpleAppBar(
+                navController,
+                title = "Створення акаунту"
+            )
         }
     ) { paddingValues ->
         Box(
@@ -32,50 +36,48 @@ fun FreeRegistrationMail(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            FreeMailContent(
-                toFreeRegPassword = toFreeRegPassword
-            )
+            FreeMailContent(navController)
         }
     }
 }
 
 @Composable
 fun FreeMailContent(
-    toFreeRegPassword: () -> Unit
+    navController: NavController
+) {
+    var mail by remember {
+        mutableStateOf("")
+    }
+
+    Column {
+        EmailField(
+            textField = "Укажіть адресу електронної пошти",
+            onEmailChange = {
+                mail = it
+            },
+            mail = mail
+        )
+
+        ButtonNext(
+            onNextClick = {
+                navController.navigate(RegistrationScreen.FreePassword.createRoute(mail))
+            },
+        )
+    }
+}
+
+@Composable
+fun ButtonNext(
+    onNextClick: () -> Unit,
 ) {
     Column(
-        modifier = Modifier.padding(
-            start = MaterialTheme.padding.start,
-            end = MaterialTheme.padding.end
-        ),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Укажіть адресу електронної пошти",
-            fontSize = 30.sp,
-            color = Color.White,
-            modifier = Modifier.padding(
-                top = 50.dp
-            ),
-            lineHeight = 38.sp
-        )
-
-        TextField(
-            value = "",
-            onValueChange = {
-
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 15.dp)
-                .scale(scaleY = 0.8F, scaleX = 1F),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.Gray
-            )
-        )
-
         Button(
-            onClick = { toFreeRegPassword.invoke() },
+            onClick = {
+                onNextClick.invoke()
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Gray
             ),
@@ -89,6 +91,7 @@ fun FreeMailContent(
             )
         }
     }
+
 }
 
 @Preview(showSystemUi = true)
@@ -96,8 +99,7 @@ fun FreeMailContent(
 fun DefaultPreview() {
     MusicTheme {
         FreeRegistrationMail(
-            {},
-            {}
+            navController = NavController(LocalContext.current)
         )
     }
 }

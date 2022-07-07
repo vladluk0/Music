@@ -18,7 +18,12 @@ sealed class RegistrationScreen(val route: String) {
     object Main : RegistrationScreen("main")
 
     object FreeMail : RegistrationScreen("main/free")
-    object FreePassword : RegistrationScreen("main/free/password")
+
+    object FreePassword : RegistrationScreen("main/free/mail/{mail}/password") {
+        fun createRoute(mail: String): String {
+            return "main/free/mail/$mail/password"
+        }
+    }
 }
 
 @Composable
@@ -55,10 +60,7 @@ fun NavGraphBuilder.addFreeMail(
     composable(
         route = RegistrationScreen.FreeMail.route
     ) {
-        FreeRegistrationMail(
-            back = { navController.popBackStack() },
-            toFreeRegPassword = { navController.navigate(RegistrationScreen.FreePassword.route) }
-        )
+        FreeRegistrationMail(navController)
     }
 }
 
@@ -67,11 +69,9 @@ fun NavGraphBuilder.addFreePassword(
 ) {
     composable(
         route = RegistrationScreen.FreePassword.route
-    ) {
-        FreeRegistrationPassword(
-            back = {
-                navController.popBackStack()
-            }
-        )
+    ) { backStackEntry ->
+        val mail = backStackEntry.arguments?.getString("mail")
+        checkNotNull(mail) { "mail in null" }
+        FreeRegistrationPassword(navController, mail)
     }
 }

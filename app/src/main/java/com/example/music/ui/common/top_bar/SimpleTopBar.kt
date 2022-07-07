@@ -13,11 +13,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.navigation.NavController
 import com.example.music.R
 import com.example.music.ui.theme.padding
 
 @Composable
-fun SimpleAppBar(back: () -> Unit) {
+fun SimpleAppBar(
+    navController: NavController,
+    title: String
+) {
     Row(
         modifier = Modifier.background(Color.Black)
     ) {
@@ -27,13 +31,13 @@ fun SimpleAppBar(back: () -> Unit) {
             tint = Color.White,
             modifier = Modifier
                 .clickable {
-                    back.invoke()
+                    navController.popBackStack()
                 }
                 .padding(start = MaterialTheme.padding.start)
         )
 
         Text(
-            text = "Створення акаунту",
+            text = title,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             color = Color.White
