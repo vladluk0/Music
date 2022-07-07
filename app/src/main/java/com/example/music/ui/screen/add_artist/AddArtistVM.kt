@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.music.data.model.artist.Artist
 import com.example.music.data.repository.artists.ArtistsRepositoryImpl
+import com.example.music.data.repository.artists.MusicResult
 import com.example.music.domain.observable.ObserveArtists
-import com.example.music.ui.theme.MusicResult
 import com.example.music.util.ObserveLoadingCounter
 import com.example.music.util.UiMessage
 import com.example.music.util.UiMessageManager

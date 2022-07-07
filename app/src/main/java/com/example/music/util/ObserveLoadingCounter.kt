@@ -1,9 +1,8 @@
 package com.example.music.util
 
-import com.example.music.ui.theme.MusicResult
+import com.example.music.data.repository.artists.MusicResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import java.util.concurrent.atomic.AtomicInteger
 

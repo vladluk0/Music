@@ -3,7 +3,6 @@ package com.example.music.ui.authentification.screen.main
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -15,25 +14,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImagePainter.State.Empty.painter
 import com.example.music.R
 import com.example.music.ui.theme.MusicTheme
 
 @Composable
-fun AuthMain() {
-    AuthMainContent()
+fun AuthMain(
+    toFreeRegistration: () -> Unit
+) {
+    AuthMainContent(toFreeRegistration)
 }
 
 @Composable
-fun AuthMainContent() {
+fun AuthMainContent(
+    toFreeRegistration: () -> Unit
+) {
     val painter = painterResource(id = R.drawable.ic_launcher_foreground)
     Column(
-        modifier = Modifier.background(Color.Black)
+        modifier = Modifier
+            .background(Color.Black)
+            .fillMaxSize()
     ) {
         Box(
             modifier = Modifier
                 .weight(1f)
-                .background(Color.Blue)
+                .background(Color.Black)
         ) {
             Image(
                 contentDescription = "",
@@ -47,13 +51,15 @@ fun AuthMainContent() {
         }
 
         Box(modifier = Modifier.weight(1f)) {
-            MainBottomContent()
+            MainBottomContent(toFreeRegistration)
         }
     }
 }
 
 @Composable
-fun MainBottomContent() {
+fun MainBottomContent(
+    toFreeRegistration: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -68,17 +74,25 @@ fun MainBottomContent() {
             text = "Мільйони пінесь.\nСлухайте безкоштовно в Spotify",
             color = Color.White,
             textAlign = TextAlign.Center,
+            modifier = Modifier.padding(
+                top = 10.dp,
+                bottom = 20.dp
+            )
         )
 
-        MainButtons()
+        MainButtons(toFreeRegistration)
     }
 }
 
 @Composable
-fun MainButtons() {
+fun MainButtons(
+    toFreeRegistration: () -> Unit
+) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                toFreeRegistration.invoke()
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Green,
                 contentColor = MaterialTheme.colorScheme.surface,
@@ -86,7 +100,7 @@ fun MainButtons() {
         ) {
             Text(
                 text = "Зареєструватись безкоштовно",
-                color = Color.Black
+                color = Color.Black,
             )
         }
         Button(
@@ -122,6 +136,6 @@ fun MainButtons() {
 @Composable
 fun DefaultPreview() {
     MusicTheme {
-        AuthMainContent()
+
     }
 }

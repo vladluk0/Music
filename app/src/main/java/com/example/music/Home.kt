@@ -28,7 +28,6 @@ fun Home(
             HomeBottomNavigation(
                 selectedNavigation = currentSelectedItem,
                 onNavigationSelected = { selected ->
-                    Log.d("zxc", selected.route)
                     navController.navigate(selected.route) {
                         launchSingleTop = true
                         restoreState = true

@@ -1,6 +1,5 @@
 package com.example.music
 
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -11,11 +10,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.example.music.di.DaggerApplicationComponent
 import com.example.music.di.DaggerScreenComponent
 import com.example.music.ui.screen.add_artist.AddArtist
 import com.example.music.ui.screen.add_artist.AddArtistVM
-import com.example.music.ui.screen.library.AddNewArtist
 import com.example.music.ui.screen.library.Library
 import com.example.music.ui.screen.library.LibraryVM
 import com.example.music.ui.screen.main.Main

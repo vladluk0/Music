@@ -19,46 +19,27 @@ data class RoundedIcon(
     val medium: Dp = 110.dp,
 )
 
+data class Padding(
+    val start: Dp = 10.dp,
+    val end: Dp = 10.dp,
+)
+
 val LocalRoundedIcon = compositionLocalOf { RoundedIcon() }
+val LocalPadding = compositionLocalOf { Padding() }
+
 
 val MaterialTheme.roundedIcon: RoundedIcon
     @Composable
     @ReadOnlyComposable
     get() = LocalRoundedIcon.current
 
+val MaterialTheme.padding: Padding
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalPadding.current
 
-sealed class MusicResult<out T> {
-    sealed class Success<T> : MusicResult<T>() {
-        data class Value<T>(val data: T) : Success<T>()
-        object Empty : Success<Nothing>()
-    }
 
-    data class Error(val code: Int? = null, val message: String) : MusicResult<Nothing>()
-    object Started : MusicResult<Nothing>()
-    object Finished : MusicResult<Nothing>()
-}
 
-@OptIn(FlowPreview::class)
-suspend inline fun <reified T> asyncRequest(
-    noinline block: suspend () -> T
-): Flow<MusicResult<T>> = flow {
-    emit(MusicResult.Started)
-    try {
-        if (null is T)
-            emit(MusicResult.Success.Empty)
-        else
-            block.asFlow().collect {
-                emit(MusicResult.Success.Value(it))
-            }
-    } catch (throwable: Throwable) {
-        val exception = when (throwable) {
-            is HttpException -> MusicResult.Error(throwable.code(), "Http Exception")
-            else -> MusicResult.Error(0, "Error")
-        }
-        emit(exception)
-    }
-    emit(MusicResult.Finished)
-}.flowOn(Dispatchers.IO)
 
 
 

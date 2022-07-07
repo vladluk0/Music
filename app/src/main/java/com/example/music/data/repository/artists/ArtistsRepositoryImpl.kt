@@ -1,12 +1,9 @@
 package com.example.music.data.repository.artists
 
-import android.util.Log
 import com.example.music.data.model.artist.Artist
-import com.example.music.data.model.artist.Artists
 import com.example.music.data.remote.RemoteArtistDaraSource
-import com.example.music.ui.theme.MusicResult
-import com.example.music.ui.theme.asyncRequest
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.*
 import retrofit2.HttpException
 import javax.inject.Inject
@@ -33,7 +30,6 @@ class ArtistsRepositoryImpl @Inject constructor(
     fun searchArtists(artistsId: String, query: String): Flow<MusicResult<List<Artist>>> {
         return flow {
             val artistsList: Flow<List<Artist>> = remoteArtistDaraSource.searchArtists(artistsId, "")
-            Log.d("zxc", "artistsList " + artistsList.toString())
             artistsList.map { artists ->
                 if (artists.isEmpty())
                     emit(MusicResult.Error(message = "No data"))
@@ -44,3 +40,36 @@ class ArtistsRepositoryImpl @Inject constructor(
         }
     }
 }
+
+sealed class MusicResult<out T> {
+    sealed class Success<T> : MusicResult<T>() {
+        data class Value<T>(val data: T) : Success<T>()
+        object Empty : Success<Nothing>()
+    }
+
+    data class Error(val code: Int? = null, val message: String) : MusicResult<Nothing>()
+    object Started : MusicResult<Nothing>()
+    object Finished : MusicResult<Nothing>()
+}
+
+@OptIn(FlowPreview::class)
+suspend inline fun <reified T> asyncRequest(
+    noinline block: suspend () -> T
+): Flow<MusicResult<T>> = flow {
+    emit(MusicResult.Started)
+    try {
+        if (null is T)
+            emit(MusicResult.Success.Empty)
+        else
+            block.asFlow().collect {
+                emit(MusicResult.Success.Value(it))
+            }
+    } catch (throwable: Throwable) {
+        val exception = when (throwable) {
+            is HttpException -> MusicResult.Error(throwable.code(), "Http Exception")
+            else -> MusicResult.Error(0, "Error")
+        }
+        emit(exception)
+    }
+    emit(MusicResult.Finished)
+}.flowOn(Dispatchers.IO)
