@@ -1,4 +1,4 @@
-package com.example.music.di
+package com.example.music.di.screen
 
 import java.lang.annotation.Documented
 import javax.inject.Scope

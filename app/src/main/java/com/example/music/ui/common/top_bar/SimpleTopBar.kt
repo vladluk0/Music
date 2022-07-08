@@ -20,7 +20,7 @@ import com.example.music.ui.theme.padding
 @Composable
 fun SimpleAppBar(
     navController: NavController,
-    title: String
+    title: String = ""
 ) {
     Row(
         modifier = Modifier.background(Color.Black)

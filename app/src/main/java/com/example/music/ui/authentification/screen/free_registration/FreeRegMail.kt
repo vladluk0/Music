@@ -51,6 +51,9 @@ fun FreeMailContent(
 
     Column {
         EmailField(
+            modifier = Modifier.padding(
+                top = 50.dp
+            ),
             textField = "Укажіть адресу електронної пошти",
             onEmailChange = {
                 mail = it

@@ -1,22 +1,18 @@
 package com.example.music.ui.authentification.screen.free_registration
 
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.music.MainActivity
-import com.example.music.ui.common.field.EmailField
 import com.example.music.ui.common.field.PasswordField
 import com.example.music.ui.common.top_bar.SimpleAppBar
 import com.example.music.ui.theme.MusicTheme
@@ -66,11 +62,14 @@ fun FreeRegContent(
         ),
     ) {
         PasswordField(
+            modifier = Modifier.padding(
+                top = 50.dp
+            ),
             textField = "Створіть пароль",
             onEmailChange = {
                 password = it
             },
-            mail = password
+            password = password
         )
 
         CreateAccountButton(

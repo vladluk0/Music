@@ -1,4 +1,4 @@
-package com.example.music.di
+package com.example.music.di.util
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +13,4 @@ class MultiViewModelFactory @Inject constructor(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return vimodelFactories.getValue(modelClass as Class<ViewModel>).get() as T
     }
-
-    val viewModelsClasses = vimodelFactories.keys
 }

@@ -3,6 +3,9 @@ package com.example.music.di
 import androidx.lifecycle.ViewModel
 import com.example.music.data.repository.artists.ArtistsRepository
 import com.example.music.data.repository.artists.ArtistsRepositoryImpl
+import com.example.music.di.screen.ScreenScope
+import com.example.music.di.util.MultiViewModelFactory
+import com.example.music.ui.authentification.screen.main.AuthViewModel
 import com.example.music.ui.screen.add_artist.AddArtistVM
 import com.example.music.ui.screen.library.LibraryVM
 import dagger.Binds
@@ -25,14 +28,24 @@ interface ScreenComponent {
     val factory: MultiViewModelFactory
 }
 
+
 @Module(
     includes = [ScreenBindModule::class]
 )
 interface ScreenModule
 
-@Module
-interface ScreenBindModule {
 
+@Module(
+    includes = [BindViewModel::class]
+)
+interface ScreenBindModule {
+    @Binds
+    fun bindArtistRepositoryImpl_to_ArtistRepository(repositoryImpl: ArtistsRepositoryImpl): ArtistsRepository
+}
+
+
+@Module
+interface BindViewModel {
     @Binds
     @[IntoMap ViewModelKey(AddArtistVM::class)]
     fun provideAddArtistViewModel(addArtistVM: AddArtistVM): ViewModel
@@ -41,6 +54,7 @@ interface ScreenBindModule {
     @[IntoMap ViewModelKey(LibraryVM::class)]
     fun provideLibraryViewModel(libraryVM: LibraryVM): ViewModel
 
-    @Binds
-    fun bindArtistRepositoryImpl_to_ArtistRepository(repositoryImpl: ArtistsRepositoryImpl): ArtistsRepository
+    /*@Binds
+    @[IntoMap ViewModelKey(AuthViewModel::class)]
+    fun bindAuthViewModel(authViewModel: AuthViewModel): ViewModel*/
 }

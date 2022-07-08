@@ -13,7 +13,7 @@ class MusicApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        appComponent = DaggerApplicationComponent.create()
+        appComponent = DaggerApplicationComponent.builder().build()
     }
 }
 
